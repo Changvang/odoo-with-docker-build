@@ -1,0 +1,35 @@
+version: "2"
+
+services: 
+    web:
+        # get image odoo for new container
+        image: odoo:12.0
+        # declare about db must run before web container
+        depends_on: 
+            - db 
+        # declare about port open host:container
+        ports: 
+            - "8069:8069"
+        # declare about the store data to volumes you need have the config file and addone folser if need
+        volumes: 
+            - odoo-web-data:/var/lib/odoo
+            - ./config:/etc/odoo
+            - ./addons:/mnt/extra-addons
+    #container of database
+    db:
+        #this image declare about the image using for database, odoo only can using postgres db
+        image: postgres:10
+        # declare some environment parameters for postgres and can odoo access to this
+        environment: 
+            - POSTGRES_DB=postgres
+            - POSTGRES_PASSWORD=odoo
+            - POSTGRES_USER=odoo
+            - PGDATA=/var/lib/postgresql/data/pgdata
+        # the volumes to store data
+        volumes: 
+            - odoo-db-data:/var/lib/postgresql/data/pgdata
+
+# declare volume vill use for service
+volumes: 
+    odoo-web-data:
+    odoo-db-data:
