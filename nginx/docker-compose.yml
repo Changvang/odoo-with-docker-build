@@ -1,0 +1,67 @@
+version: "3"
+
+services:
+    server:
+        container_name: nginxapp
+        image: nginx
+        restart: unless-stopped
+        depends_on: 
+            - odoo
+        ports:
+            - "5000:80"
+            - "5443:443"
+        volumes:
+            - "./config/nginx.conf:/etc/nginx/mginx.conf"
+    db:
+        container_name: mypostgres
+        restart: always
+        build:
+            context: ./postgres
+            dockerfile: Dockerfile
+        volumes:
+            - odoo13-db-postgres:/var/lib/postgresql/data/pgdata
+        ports:
+            - "5432:5432"
+    web:
+        odoo1:
+            container_name: odoo13
+            image: odoo:13.0
+            depends_on: 
+                - db
+            ports:
+                - "8071:8069"
+            volumes:
+                - odoo13-data-1:/var/lib/data
+                - ./config/odoo1.conf:/etc/odoo/odoo.conf
+                - ./addons:/mnt/extra-addons
+
+        odoo2:
+            container_name: odoo13
+            image: odoo:13.0
+            depends_on: 
+                - db
+            ports:
+                - "8072:8069"
+            volumes:
+                - odoo13-data-2:/var/lib/data
+                - ./config/odoo2.conf:/etc/odoo/odoo.conf
+                - ./addons:/mnt/extra-addons
+
+        odoo3:
+            container_name: odoo13
+            image: odoo:13.0
+            depends_on: 
+                - db
+            ports:
+                - "8073:8069"
+            volumes:
+                - odoo13-data-3:/var/lib/data
+                - ./config/odoo3.conf:/etc/odoo/odoo.conf
+                - ./addons:/mnt/extra-addons
+                
+        
+volumes:
+    odoo13-data-1:
+    odoo13-data-2:
+    odoo13-data-3:
+    odoo13-db-postgres:
